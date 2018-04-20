@@ -38,10 +38,11 @@ def test():
     color.color(prp_path, rst_path)
 
     # return the URL
-    url = myutils.strip(rst_path)
-    return render_template('result.html', path=url)
+    ori_url = myutils.strip(ori_path)
+    rst_url = myutils.strip(rst_path)
+    return render_template('result.html', ori=ori_url, rst=rst_url)
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    app.run()
+    app.run(debug=True)
+    # app.run()

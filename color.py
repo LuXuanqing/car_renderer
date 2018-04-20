@@ -9,23 +9,19 @@ from model import CycleGAN
 import utils
 
 def color(src, dst):
-  FLAGS = tf.flags.FLAGS
-  tf.flags.DEFINE_string('model', 'pretrained/sketch2render.pb', 'model path (.pb)')
-  tf.flags.DEFINE_string('input', src, 'input image path (.jpg)')
-  tf.flags.DEFINE_string('output', dst, 'output image path (.jpg)')
-  tf.flags.DEFINE_integer('image_size', '256', 'image size, default: 256')
+  MODEL = 'pretrained/sketch2render.pb'
+  IMG_SIZE = 256
 
   graph = tf.Graph()
-
   with graph.as_default():
-    with tf.gfile.FastGFile(FLAGS.input, 'rb') as f:
+    with tf.gfile.FastGFile(src, 'rb') as f:
       image_data = f.read()
       input_image = tf.image.decode_jpeg(image_data, channels=3)
-      input_image = tf.image.resize_images(input_image, size=(FLAGS.image_size, FLAGS.image_size))
+      input_image = tf.image.resize_images(input_image, size=(IMG_SIZE, IMG_SIZE))
       input_image = utils.convert2float(input_image)
-      input_image.set_shape([FLAGS.image_size, FLAGS.image_size, 3])
+      input_image.set_shape([IMG_SIZE, IMG_SIZE, 3])
 
-    with tf.gfile.FastGFile(FLAGS.model, 'rb') as model_file:
+    with tf.gfile.FastGFile(MODEL, 'rb') as model_file:
       graph_def = tf.GraphDef()
       graph_def.ParseFromString(model_file.read())
     [output_image] = tf.import_graph_def(graph_def,
@@ -35,7 +31,7 @@ def color(src, dst):
 
   with tf.Session(graph=graph) as sess:
     generated = output_image.eval()
-    with open(FLAGS.output, 'wb') as f:
+    with open(dst, 'wb') as f:
       f.write(generated)
 
 '''
