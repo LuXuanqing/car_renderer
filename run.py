@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, render_template
 import os, time
-import utils
+import myutils
+import color
 
 app = Flask(__name__)
 
@@ -16,24 +17,31 @@ def result():
 
 @app.route('/test', methods=['POST'])
 def test():
-    # dir config
-    base_dir = 'static/pic'
-    ori_dir = os.path.join(base_dir, 'original')
-    rsz_dir = os.path.join(base_dir, 'resized')
-    rst_dir = os.path.join(base_dir, 'result')
-
     # generate a filename by time
     now = time.strftime("%Y%m%d%H%M%S", time.localtime())
     filename = now + '.jpg'
+    
+    # path config
+    base_dir = 'static/pic'
+    ori_path = os.path.join(base_dir, 'original', filename)
+    prp_path = os.path.join(base_dir, 'preprocessed', filename)
+    rst_path = os.path.join(base_dir, 'result', filename)
 
     # save the file
     f = request.files['file']
-    f.save(os.path.join(ori_dir, filename))
-    
+    f.save(ori_path)
+
+    # preprocess
+    myutils.img_prep(ori_path, prp_path)
+
+    # color
+    color.color(prp_path, rst_path)
+
     # return the URL
-    url = utils.strip(os.path.join(ori_dir, filename))
+    url = myutils.strip(rst_path)
     return render_template('result.html', path=url)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run()
