@@ -22,7 +22,7 @@ def test():
     filename = now + '.jpg'
     
     # path config
-    base_dir = 'static/pic'
+    base_dir = os.path.join('static', 'pic')
     ori_path = os.path.join(base_dir, 'original', filename)
     prp_path = os.path.join(base_dir, 'preprocessed', filename)
     rst_path = os.path.join(base_dir, 'result', filename)
